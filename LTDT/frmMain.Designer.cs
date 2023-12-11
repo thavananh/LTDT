@@ -28,21 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.gradientPanel1 = new LTDT.GradientPanel();
             this.rdoDFS = new System.Windows.Forms.RadioButton();
             this.rdoBFS = new System.Windows.Forms.RadioButton();
+            this.gradientPanel1 = new LTDT.GradientPanel();
             this.SuspendLayout();
-            // 
-            // gradientPanel1
-            // 
-            this.gradientPanel1.ColorBottom = System.Drawing.Color.Transparent;
-            this.gradientPanel1.ColorTop = System.Drawing.Color.Transparent;
-            this.gradientPanel1.GradientAngle = 90F;
-            this.gradientPanel1.Location = new System.Drawing.Point(9, 52);
-            this.gradientPanel1.Margin = new System.Windows.Forms.Padding(0);
-            this.gradientPanel1.Name = "gradientPanel1";
-            this.gradientPanel1.Size = new System.Drawing.Size(614, 472);
-            this.gradientPanel1.TabIndex = 0;
             // 
             // rdoDFS
             // 
@@ -66,10 +55,26 @@
             this.rdoBFS.Text = "BFS";
             this.rdoBFS.UseVisualStyleBackColor = true;
             // 
+            // gradientPanel1
+            // 
+            this.gradientPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gradientPanel1.AutoSize = true;
+            this.gradientPanel1.ColorBottom = System.Drawing.Color.Transparent;
+            this.gradientPanel1.ColorTop = System.Drawing.Color.Transparent;
+            this.gradientPanel1.GradientAngle = 90F;
+            this.gradientPanel1.Location = new System.Drawing.Point(9, 52);
+            this.gradientPanel1.Margin = new System.Windows.Forms.Padding(0);
+            this.gradientPanel1.Name = "gradientPanel1";
+            this.gradientPanel1.Size = new System.Drawing.Size(614, 472);
+            this.gradientPanel1.TabIndex = 0;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1073, 533);
             this.Controls.Add(this.rdoBFS);
             this.Controls.Add(this.rdoDFS);
@@ -78,6 +83,8 @@
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "frmMain";
             this.Text = "frmMain";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
+            this.Load += new System.EventHandler(this.frmMain_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

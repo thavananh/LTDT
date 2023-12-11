@@ -39,17 +39,40 @@ namespace LTDT
             if (_totalButtonSelect == 0)
             {
                 btn.BackgroundImage = Properties.Resources.placeholder;
+                buttonTag tagTmp = (buttonTag)btn.Tag;
+                tagTmp.ImageTag = 4;
+                btn.Tag = tagTmp;
+                PictureBox pctb = new PictureBox()
+                {
+                    Width = 40,
+                    Height = 40,
+                    //Location = new Point(ConstantVar.BTNPANEL_WIDTH, ConstantVar.BTNPANEL_HEIGHT), // x y
+                    Location = new Point(btn.Location.X + 40, btn.Location.Y + 40),
+                    BackgroundImageLayout = ImageLayout.Stretch,
+                    Tag = new buttonTag() { RowIndex = 0 },
+                    BackgroundImage = Properties.Resources.man,
+                    BackColor = Color.Transparent
+                };
+                BoardPanel.Controls.Add(pctb);
+                pctb.BringToFront();
+                btn.SendToBack();
             }
             else if (_totalButtonSelect == 1)
             {
                 btn.BackgroundImage = Properties.Resources.destination;
+                buttonTag tagTmp = (buttonTag)btn.Tag;
+                tagTmp.ImageTag = 5;
+                btn.Tag = tagTmp;
             }
-            Random rand = new Random();
-            int randNum = rand.Next(1, 4);
-            btn.BackgroundImage = _randObstacles[randNum].Asset;
-            buttonTag tagTmp = (buttonTag)btn.Tag;
-            tagTmp.ImageTag = _randObstacles[randNum].IdImage;
-            btn.Tag = tagTmp;
+            else
+            {
+                Random rand = new Random();
+                int randNum = rand.Next(1, 4);
+                btn.BackgroundImage = _randObstacles[randNum].Asset;
+                buttonTag tagTmp = (buttonTag)btn.Tag;
+                tagTmp.ImageTag = _randObstacles[randNum].IdImage;
+                btn.Tag = tagTmp;
+            }
             _totalButtonSelect++;
         }
 
@@ -58,6 +81,7 @@ namespace LTDT
             MatrixButton = new List<List<Button>>();
             for (int i = 0; i < ConstantVar.ROW_NUMBER; i++)
             {
+                MatrixButton.Add(new List<Button>());
                 for (int j = 0; j < ConstantVar.COL_NUMBER; j++)
                 {
                     Button btn = new Button()
@@ -66,7 +90,7 @@ namespace LTDT
                         Height = ConstantVar.BTNPANEL_HEIGHT,
                         Location = new Point(j * ConstantVar.BTNPANEL_WIDTH, i * ConstantVar.BTNPANEL_HEIGHT),
                         BackgroundImageLayout = ImageLayout.Stretch,
-                        Tag = new buttonTag() {RowIndex = 0}
+                        Tag = new buttonTag() {RowIndex = 0},
                     };
                     btn.Click += btnPanel_Click;
                     BoardPanel.Controls.Add(btn);
