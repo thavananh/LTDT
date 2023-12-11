@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace LTDT
 {
-    class GradientLabel : Label
+    public class GradientLabel : Label
     {
         private Color backgroundColorTop;
         private Color backgroundColorBottom;

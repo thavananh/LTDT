@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace LTDT
 {
-    class GradientPictureBox : PictureBox
+    public class GradientPictureBox : PictureBox
     {
         private Color colorTop;
         private Color colorBottom;

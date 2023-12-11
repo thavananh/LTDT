@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace LTDT
 {
-    class GradientPanel : Panel
+    public class GradientPanel : Panel
     {
         private Color colorTop;
         private Color colorBottom;

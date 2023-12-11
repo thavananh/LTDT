@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="buttonTag.cs" />
     <Compile Include="ConstantVar.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="frmMain.cs">
