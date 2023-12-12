@@ -8,8 +8,8 @@ namespace LTDT
 {
     public static class ConstantVar
     {
-        public static int BTNPANEL_WIDTH = 80;
-        public static int BTNPANEL_HEIGHT = 80;
+        public static int BTNPANEL_WIDTH = 40;
+        public static int BTNPANEL_HEIGHT = 40;
         public static int ROW_NUMBER = 6;
         public static int COL_NUMBER = 6;
     }

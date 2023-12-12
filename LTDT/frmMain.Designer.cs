@@ -30,7 +30,10 @@
         {
             this.rdoDFS = new System.Windows.Forms.RadioButton();
             this.rdoBFS = new System.Windows.Forms.RadioButton();
+            this.btnXoaCoVaDich = new System.Windows.Forms.Button();
+            this.btnRun = new System.Windows.Forms.Button();
             this.gradientPanel1 = new LTDT.GradientPanel();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // rdoDFS
@@ -55,6 +58,25 @@
             this.rdoBFS.Text = "BFS";
             this.rdoBFS.UseVisualStyleBackColor = true;
             // 
+            // btnXoaCoVaDich
+            // 
+            this.btnXoaCoVaDich.Location = new System.Drawing.Point(525, 26);
+            this.btnXoaCoVaDich.Name = "btnXoaCoVaDich";
+            this.btnXoaCoVaDich.Size = new System.Drawing.Size(98, 23);
+            this.btnXoaCoVaDich.TabIndex = 3;
+            this.btnXoaCoVaDich.Text = "Xoá cờ và đích";
+            this.btnXoaCoVaDich.UseVisualStyleBackColor = true;
+            // 
+            // btnRun
+            // 
+            this.btnRun.Location = new System.Drawing.Point(444, 26);
+            this.btnRun.Name = "btnRun";
+            this.btnRun.Size = new System.Drawing.Size(75, 23);
+            this.btnRun.TabIndex = 4;
+            this.btnRun.Text = "Run";
+            this.btnRun.UseVisualStyleBackColor = true;
+            this.btnRun.Click += new System.EventHandler(this.btnRun_Click);
+            // 
             // gradientPanel1
             // 
             this.gradientPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -70,12 +92,24 @@
             this.gradientPanel1.Size = new System.Drawing.Size(614, 472);
             this.gradientPanel1.TabIndex = 0;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(708, 233);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1073, 533);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnRun);
+            this.Controls.Add(this.btnXoaCoVaDich);
             this.Controls.Add(this.rdoBFS);
             this.Controls.Add(this.rdoDFS);
             this.Controls.Add(this.gradientPanel1);
@@ -95,5 +129,8 @@
         private GradientPanel gradientPanel1;
         private System.Windows.Forms.RadioButton rdoDFS;
         private System.Windows.Forms.RadioButton rdoBFS;
+        private System.Windows.Forms.Button btnXoaCoVaDich;
+        private System.Windows.Forms.Button btnRun;
+        private System.Windows.Forms.Button button1;
     }
 }

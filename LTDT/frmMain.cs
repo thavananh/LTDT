@@ -17,6 +17,7 @@ namespace LTDT
         #region Properties
 
         private Board board;
+        public static frmMain instance;
         
 
         #endregion
@@ -24,17 +25,24 @@ namespace LTDT
         public frmMain()
         {
             InitializeComponent();
+            instance = this;
         }
 
         private void frmMain_Load(object sender, EventArgs e)
         {
             board = new Board(gradientPanel1);
             board.drawBoardPanel();
+
         }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             Application.Exit();
+        }
+
+        private void btnRun_Click(object sender, EventArgs e)
+        {
+            board.XuLyDiChuyen();
         }
     }
 }
