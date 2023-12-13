@@ -42,7 +42,7 @@ namespace LTDT
 
         private void btnRun_Click(object sender, EventArgs e)
         {
-            board.XuLyDiChuyen();
+            board.startDoingThing();
         }
     }
 }

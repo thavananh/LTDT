@@ -93,7 +93,7 @@ namespace LTDT
         }
 
         private int stopTimer = 0;
-        private int destButtonRowIndex = 1;
+        private int destButtonRowIndex = 0;
         private int destButtonColIndex = 0;
         private int manPctbStartLocationX = 0;
         private int manPctbStartLocationY = 0;
@@ -106,6 +106,7 @@ namespace LTDT
                 if (manPctb.Location.Y == getButton(destButtonRowIndex, destButtonColIndex).Location.Y + 5)
                 {
                     _timer.Stop();
+                    tcs.SetResult(true);
                     return;
                 }
                 MoveObjectTUp(2);
@@ -115,6 +116,7 @@ namespace LTDT
                 if (manPctb.Location.Y == getButton(destButtonRowIndex, destButtonColIndex).Location.Y + 5)
                 {
                     _timer.Stop();
+                    tcs.SetResult(true);
                     return;
                 }
                 MoveObjectDown(2);
@@ -124,20 +126,26 @@ namespace LTDT
                 if (manPctb.Location.X == getButton(destButtonRowIndex, destButtonColIndex).Location.X + 5)
                 {
                     _timer.Stop();
+                    tcs.SetResult(true);
                     return;
                 }
                 MoveObjectLeft(2);
             }
-            else
+            else if (movedDirection == "right")
             {
                 if (manPctb.Location.X == getButton(destButtonRowIndex, destButtonColIndex).Location.X + 5)
                 {
                     _timer.Stop();
+                    tcs.SetResult(true);
                     return;
                 }
                 MoveObjectRight(2);
             }
-            
+            else
+            {
+                _timer.Stop();
+                tcs.SetResult(true);
+            }
         }
 
         public void drawBoardPanel()
@@ -168,17 +176,37 @@ namespace LTDT
             return MatrixButton[destButtonRowIndex][destButtonColIndex];
         }
 
-        public void XuLyDiChuyen()
+        private TaskCompletionSource<bool> tcs;
+        private TaskCompletionSource<bool> tcs1;
+
+        public async void XuLyDiChuyen()
         {
+            tcs = new TaskCompletionSource<bool>();
+            tcs1 = new TaskCompletionSource<bool>();
             manPctbStartLocationX = manPctb.Location.X;
             manPctbStartLocationY = manPctb.Location.Y;
-            _timer.Start();
             manPctb.BringToFront();
+            _timer.Start();
+            await tcs.Task;
+            await Task.Delay(1000);
+            tcs1.SetResult(true);
         }
 
-        private void startDoingThing()
+        public async void startDoingThing()
         {
-
+            int preRowIndex = 0;
+            int preColIndex = 0;
+            for (int i = 0; i < 1; ++i)
+            {
+                for (int j = 0; j < MatrixButton[i].Count; j++)
+                {
+                    movedDirection = GetDirection(preRowIndex, preColIndex, i, j);
+                    destButtonRowIndex = i;
+                    destButtonColIndex = j;
+                    XuLyDiChuyen();
+                    await tcs1.Task;
+                }
+            }
         }
 
         private string GetDirection(int preRowIndex, int preColIndex, int newRowIndex, int newColIndex)
