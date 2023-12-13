@@ -93,20 +93,51 @@ namespace LTDT
         }
 
         private int stopTimer = 0;
-        private int destButtonRowIndex = 0;
-        private int destButtonColIndex = 1;
-        private int manPctbStartLocation = 0;
-        private string movedDirection = "";
+        private int destButtonRowIndex = 1;
+        private int destButtonColIndex = 0;
+        private int manPctbStartLocationX = 0;
+        private int manPctbStartLocationY = 0;
+        private string movedDirection = "left";
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            if (manPctb.Location.X == getButton(destButtonRowIndex, destButtonColIndex).Location.X + manPctbStartLocation)
+            if (movedDirection == "up")
             {
-                _timer.Stop();
-                return;
+                if (manPctb.Location.Y == getButton(destButtonRowIndex, destButtonColIndex).Location.Y + 5)
+                {
+                    _timer.Stop();
+                    return;
+                }
+                MoveObjectTUp(2);
             }
-            MoveObject(2);
-            stopTimer++;
+            else if (movedDirection == "down")
+            {
+                if (manPctb.Location.Y == getButton(destButtonRowIndex, destButtonColIndex).Location.Y + 5)
+                {
+                    _timer.Stop();
+                    return;
+                }
+                MoveObjectDown(2);
+            }
+            else if (movedDirection == "left")
+            {
+                if (manPctb.Location.X == getButton(destButtonRowIndex, destButtonColIndex).Location.X + 5)
+                {
+                    _timer.Stop();
+                    return;
+                }
+                MoveObjectLeft(2);
+            }
+            else
+            {
+                if (manPctb.Location.X == getButton(destButtonRowIndex, destButtonColIndex).Location.X + 5)
+                {
+                    _timer.Stop();
+                    return;
+                }
+                MoveObjectRight(2);
+            }
+            
         }
 
         public void drawBoardPanel()
@@ -139,14 +170,60 @@ namespace LTDT
 
         public void XuLyDiChuyen()
         {
-            manPctbStartLocation = manPctb.Location.X;
+            manPctbStartLocationX = manPctb.Location.X;
+            manPctbStartLocationY = manPctb.Location.Y;
             _timer.Start();
             manPctb.BringToFront();
         }
 
-        private void MoveObject(int speed)
+        private void startDoingThing()
+        {
+
+        }
+
+        private string GetDirection(int preRowIndex, int preColIndex, int newRowIndex, int newColIndex)
+        {
+            if (newRowIndex > preRowIndex)
+            {
+                return "down";
+            }
+
+            if (newRowIndex < preRowIndex)
+            {
+                return "up";
+            }
+
+            if (newColIndex > preColIndex)
+            {
+                return "right";
+            }
+
+            if (newColIndex < preColIndex)
+            {
+                return "left";
+            }
+
+            return "";
+        }
+
+        private void MoveObjectRight(int speed)
         {
             ManPctb.Left += speed;
+        }
+
+        private void MoveObjectLeft(int speed)
+        {
+            ManPctb.Left -= speed;
+        }
+
+        private void MoveObjectTUp(int speed)
+        {
+            ManPctb.Top -= speed;
+        }
+
+        private void MoveObjectDown(int speed)
+        {
+            ManPctb.Top += speed;
         }
     }
 }
