@@ -13,6 +13,7 @@ namespace LTDT
     {
         private GradientPanel _boardPanel;
         private List<List<Button>> _matrixButton;
+        private List<List<int>> adjList = new List<List<int>>(ConstantVar.ROW_NUMBER);
         private Obstacle _rock = new Obstacle(1, Properties.Resources.rocks);
         private Obstacle _snowman = new Obstacle(2, Properties.Resources.snowman);
         private Obstacle _tree = new Obstacle(3, Properties.Resources.tree);
@@ -22,6 +23,8 @@ namespace LTDT
         {
             Interval = 1,
         };
+
+        private List<bool> visited;
 
         private PictureBox manPctb;
 
@@ -39,6 +42,11 @@ namespace LTDT
                 {3, _tree}
             };
             _timer.Tick += Timer_Tick;
+            visited = new List<bool>();
+            for (int i = 0; i < ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER; i++)
+            {
+                visited.Add(false);
+            }
         }
 
         private void btnPanel_Click(object sender, EventArgs e)
@@ -64,13 +72,13 @@ namespace LTDT
                     //Location = new Point(ConstantVar.BTNPANEL_WIDTH, ConstantVar.BTNPANEL_HEIGHT), // x y
                     Location = new Point(btn.Location.X + 5, btn.Location.Y + 5),
                     BackgroundImageLayout = ImageLayout.Stretch,
-                    Tag = new buttonTag() { RowIndex = tagTmp.RowIndex },
+                    Tag = new PictureBoxTag() { RowIndex = tagTmp.RowIndex, ColIndex = tagTmp.ColIndex},
                     BackgroundImage = Properties.Resources.man,
                     BackColor = Color.Transparent,
                     BorderStyle = BorderStyle.FixedSingle
                 };
                 BoardPanel.Controls.Add(ManPctb);
-                ManPctb.BringToFront();
+                //ManPctb.BringToFront();
                 //btn.SendToBack();
             }
             else if (_totalButtonSelect == 1)
@@ -92,18 +100,19 @@ namespace LTDT
             _totalButtonSelect++;
         }
 
-        private int stopTimer = 0;
         private int destButtonRowIndex = 0;
         private int destButtonColIndex = 0;
-        private int manPctbStartLocationX = 0;
-        private int manPctbStartLocationY = 0;
+        //private int manPctbStartLocationX = 0;
+        //private int manPctbStartLocationY = 0;
         private string movedDirection = "left";
 
         private void Timer_Tick(object sender, EventArgs e)
         {
+            int btnDestLocationY = getButton(destButtonRowIndex, destButtonColIndex).Location.Y;
+            int btnDestLocationX = getButton(destButtonRowIndex, destButtonColIndex).Location.X;
             if (movedDirection == "up")
             {
-                if (manPctb.Location.Y == getButton(destButtonRowIndex, destButtonColIndex).Location.Y + 5)
+                if (manPctb.Location.Y == btnDestLocationY + 5)
                 {
                     _timer.Stop();
                     tcs.SetResult(true);
@@ -113,7 +122,7 @@ namespace LTDT
             }
             else if (movedDirection == "down")
             {
-                if (manPctb.Location.Y == getButton(destButtonRowIndex, destButtonColIndex).Location.Y + 5)
+                if (manPctb.Location.Y == btnDestLocationY + 5)
                 {
                     _timer.Stop();
                     tcs.SetResult(true);
@@ -123,7 +132,7 @@ namespace LTDT
             }
             else if (movedDirection == "left")
             {
-                if (manPctb.Location.X == getButton(destButtonRowIndex, destButtonColIndex).Location.X + 5)
+                if (manPctb.Location.X == btnDestLocationX + 5)
                 {
                     _timer.Stop();
                     tcs.SetResult(true);
@@ -133,13 +142,53 @@ namespace LTDT
             }
             else if (movedDirection == "right")
             {
-                if (manPctb.Location.X == getButton(destButtonRowIndex, destButtonColIndex).Location.X + 5)
+                if (manPctb.Location.X == btnDestLocationX + 5)
                 {
                     _timer.Stop();
                     tcs.SetResult(true);
                     return;
                 }
                 MoveObjectRight(2);
+            }
+            else if (movedDirection == "rightbottom")
+            {
+                if (ManPctb.Location.X == btnDestLocationX + 5 && ManPctb.Location.Y == btnDestLocationY + 5) 
+                {
+                    _timer.Stop();
+                    tcs.SetResult(true);
+                    return;
+                }
+                MoveObjectRightBottom(2);
+            }
+            else if (movedDirection == "leftbottom")
+            {
+                if (ManPctb.Location.X == btnDestLocationX + 5 && ManPctb.Location.Y == btnDestLocationY + 5)
+                {
+                    _timer.Stop();
+                    tcs.SetResult(true);
+                    return;
+                }
+                MoveObjectLeftBottom(2);
+            }
+            else if (movedDirection == "righttop")
+            {
+                if (ManPctb.Location.X == btnDestLocationX + 5 && ManPctb.Location.Y == btnDestLocationY + 5)
+                {
+                    _timer.Stop();
+                    tcs.SetResult(true);
+                    return;
+                }
+                MoveObjectRightTop(2);
+            }
+            else if (movedDirection == "lefttop")
+            {
+                if (ManPctb.Location.X == btnDestLocationX + 5 && ManPctb.Location.Y == btnDestLocationY + 5)
+                {
+                    _timer.Stop();
+                    tcs.SetResult(true);
+                    return;
+                }
+                MoveObjectLeftTop(2);
             }
             else
             {
@@ -151,29 +200,80 @@ namespace LTDT
         public void drawBoardPanel()
         {
             MatrixButton = new List<List<Button>>();
+
+            for (int i = 0; i < ConstantVar.ROW_NUMBER * ConstantVar.COL_NUMBER; i++)
+            {
+                adjList.Add(new List<int>(ConstantVar.ROW_NUMBER * ConstantVar.COL_NUMBER));
+                for (int j = 0; j < ConstantVar.ROW_NUMBER * ConstantVar.COL_NUMBER; j++)
+                {
+                    adjList[i].Add(0);
+                }
+            }
+
+            int soNode = 0;
+            
             for (int i = 0; i < ConstantVar.ROW_NUMBER; i++)
             {
                 MatrixButton.Add(new List<Button>());
                 for (int j = 0; j < ConstantVar.COL_NUMBER; j++)
                 {
+                    
                     Button btn = new Button()
                     {
                         Width = ConstantVar.BTNPANEL_WIDTH,
                         Height = ConstantVar.BTNPANEL_HEIGHT,
                         Location = new Point(j * ConstantVar.BTNPANEL_WIDTH, i * ConstantVar.BTNPANEL_HEIGHT),
                         BackgroundImageLayout = ImageLayout.Stretch,
-                        Tag = new buttonTag() {RowIndex = 0},
+                        Tag = new buttonTag(i, j, 0, soNode),
                     };
                     btn.Click += btnPanel_Click;
                     BoardPanel.Controls.Add(btn);
                     MatrixButton[i].Add(btn);
+                    soNode++;
                 }
             }
+
+            soNode = 0;
+
+            for (int i = 0; i < ConstantVar.ROW_NUMBER; i++)
+            {
+                for (int j = 0; j < ConstantVar.COL_NUMBER; j++)
+                {
+                    
+                    if (j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER)
+                    {
+                        adjList[soNode][getNodeId(i, j + 1)] = 1;
+                    }
+
+                    if (j - 1 >= 0)
+                    {
+                        adjList[soNode][getNodeId(i, j - 1)] = 1;
+                    }
+
+                    if (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)
+                    {
+                        adjList[soNode][getNodeId(i + 1, j)] = 1;
+                    }
+
+                    if (i - 1 >= 0)
+                    {
+                        adjList[soNode][getNodeId(i - 1, j)] = 1;
+                    }
+
+                    soNode++;
+                }
+            }
+            
         }
 
         private Button getButton(int i, int j)
         {
             return MatrixButton[destButtonRowIndex][destButtonColIndex];
+        }
+
+        private int getNodeId(int i, int j)
+        {
+            return ((buttonTag)MatrixButton[i][j].Tag).NodeID;
         }
 
         private TaskCompletionSource<bool> tcs;
@@ -183,24 +283,25 @@ namespace LTDT
         {
             tcs = new TaskCompletionSource<bool>();
             tcs1 = new TaskCompletionSource<bool>();
-            manPctbStartLocationX = manPctb.Location.X;
-            manPctbStartLocationY = manPctb.Location.Y;
+            //manPctbStartLocationX = manPctb.Location.X;
+            //manPctbStartLocationY = manPctb.Location.Y;
             manPctb.BringToFront();
             _timer.Start();
             await tcs.Task;
-            await Task.Delay(1000);
+            await Task.Delay(500);
             tcs1.SetResult(true);
+
         }
 
         public async void startDoingThing()
         {
-            int preRowIndex = 0;
-            int preColIndex = 0;
-            for (int i = 0; i < 1; ++i)
+            
+            PictureBoxTag pctbTag = (PictureBoxTag)manPctb.Tag;
+            for (int i = pctbTag.RowIndex; i < MatrixButton.Count; ++i)
             {
-                for (int j = 0; j < MatrixButton[i].Count; j++)
+                for (int j = pctbTag.ColIndex; j < MatrixButton[i].Count; j++)
                 {
-                    movedDirection = GetDirection(preRowIndex, preColIndex, i, j);
+                    movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, i, j);
                     destButtonRowIndex = i;
                     destButtonColIndex = j;
                     XuLyDiChuyen();
@@ -208,6 +309,56 @@ namespace LTDT
                 }
             }
         }
+
+        private Button getButtonByNodeId(int id)
+        {
+            for (int i = 0; i < MatrixButton.Count; i++)
+            {
+                for (int j = 0; j < MatrixButton[i].Count; j++)
+                {
+                    if (((buttonTag)MatrixButton[i][j].Tag).NodeID == id)
+                    {
+                        return MatrixButton[i][j];
+                    }
+                }
+            }
+            return null;
+        }
+
+        public async void dfs()
+        {
+            PictureBoxTag pctbTag = (PictureBoxTag)manPctb.Tag;
+            Stack<int> stc = new Stack<int>();
+            stc.Push(getNodeId(pctbTag.RowIndex, pctbTag.ColIndex));
+            int totalNode = ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER;
+            visited[getNodeId(pctbTag.RowIndex, pctbTag.ColIndex)] = true;
+            while (stc.Count > 0)
+            {
+                int v = stc.Peek();
+                frmMain.instance.KetQua.Text += v + " ";
+                stc.Pop();
+                for (int i = 0; i < totalNode; i++)
+                {
+                    if (!visited[i] && adjList[v][i] == 1)
+                    {
+                        visited[i] = true;
+                        stc.Push(i);
+                        buttonTag tmp = (buttonTag)getButtonByNodeId(i).Tag;
+                        movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, tmp.RowIndex , tmp.ColIndex);
+                        destButtonRowIndex = tmp.RowIndex;
+                        destButtonColIndex = tmp.ColIndex;
+                        pctbTag.RowIndex = tmp.RowIndex;
+                        pctbTag.ColIndex = tmp.ColIndex;
+                        XuLyDiChuyen();
+                        await tcs1.Task;
+                        MatrixButton[destButtonRowIndex][destButtonColIndex].BackColor = Color.Red;
+                        break;
+                    }
+                }
+            }
+        }
+
+        
 
         private string GetDirection(int preRowIndex, int preColIndex, int newRowIndex, int newColIndex)
         {
@@ -231,6 +382,25 @@ namespace LTDT
                 return "left";
             }
 
+            if (newColIndex > preColIndex && newRowIndex > preRowIndex)
+            {
+                return "rightbottom";
+            }
+
+            if (newRowIndex > preRowIndex && newColIndex < preColIndex)
+            {
+                return "leftbottom";
+            }
+
+            if (newRowIndex < preRowIndex && newColIndex > preRowIndex)
+            {
+                return "righttop";
+            }
+
+            if (newColIndex < preColIndex && newRowIndex < preRowIndex)
+            {
+                return "lefttop";
+            }
             return "";
         }
 
@@ -252,6 +422,30 @@ namespace LTDT
         private void MoveObjectDown(int speed)
         {
             ManPctb.Top += speed;
+        }
+
+        private void MoveObjectRightBottom(int speed)
+        {
+            ManPctb.Left += speed;
+            manPctb.Top += speed;
+        }
+
+        private void MoveObjectRightTop(int speed)
+        {
+            ManPctb.Left += speed;
+            manPctb.Top -= speed;
+        }
+
+        private void MoveObjectLeftBottom(int speed)
+        {
+            ManPctb.Left -= speed;
+            manPctb.Top += speed;
+        }
+
+        private void MoveObjectLeftTop(int speed)
+        {
+            ManPctb.Left -= speed;
+            manPctb.Top -= speed;
         }
     }
 }

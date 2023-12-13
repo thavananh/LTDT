@@ -8,21 +8,26 @@ namespace LTDT
 {
     class PictureBoxTag
     {
-        private int _rowIndex;
-        private int _imageTag;
-        public int RowIndex { get => _rowIndex; set => _rowIndex = value; }
-        public int ImageTag { get => _imageTag; set => _imageTag = value; }
+        private int rowIndex;
+        private int imageTag;
+        private int colIndex;
+
+        public int RowIndex { get => rowIndex; set => rowIndex = value; }
+        public int ImageTag { get => imageTag; set => imageTag = value; }
+        public int ColIndex { get => colIndex; set => colIndex = value; }
 
         public PictureBoxTag()
         {
             this.RowIndex = -1;
+            this.ColIndex = -1;
             this.ImageTag = 0;
         }
 
-        public PictureBoxTag(PictureBoxTag ptcbTag)
+        public PictureBoxTag(buttonTag btnTag)
         {
-            this.RowIndex = ptcbTag.RowIndex;
-            this.ImageTag = ptcbTag.ImageTag;
+            this.RowIndex = btnTag.RowIndex;
+            this.ColIndex = btnTag.ColIndex;
+            this.ImageTag = btnTag.ImageTag;
         }
     }
 }

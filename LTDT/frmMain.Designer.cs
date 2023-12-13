@@ -34,6 +34,7 @@
             this.btnRun = new System.Windows.Forms.Button();
             this.gradientPanel1 = new LTDT.GradientPanel();
             this.button1 = new System.Windows.Forms.Button();
+            this.rtxKetQua = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // rdoDFS
@@ -94,12 +95,20 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(708, 233);
+            this.button1.Location = new System.Drawing.Point(784, 143);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 5;
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
+            // 
+            // rtxKetQua
+            // 
+            this.rtxKetQua.Location = new System.Drawing.Point(626, 428);
+            this.rtxKetQua.Name = "rtxKetQua";
+            this.rtxKetQua.Size = new System.Drawing.Size(442, 96);
+            this.rtxKetQua.TabIndex = 6;
+            this.rtxKetQua.Text = "";
             // 
             // frmMain
             // 
@@ -107,6 +116,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1073, 533);
+            this.Controls.Add(this.rtxKetQua);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.btnRun);
             this.Controls.Add(this.btnXoaCoVaDich);
@@ -132,5 +142,6 @@
         private System.Windows.Forms.Button btnXoaCoVaDich;
         private System.Windows.Forms.Button btnRun;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.RichTextBox rtxKetQua;
     }
 }
