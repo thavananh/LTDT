@@ -104,7 +104,7 @@ namespace LTDT
         private int destButtonColIndex = 0;
         //private int manPctbStartLocationX = 0;
         //private int manPctbStartLocationY = 0;
-        private string movedDirection = "left";
+        private string movedDirection = "";
 
         private void Timer_Tick(object sender, EventArgs e)
         {
@@ -190,6 +190,15 @@ namespace LTDT
                 }
                 MoveObjectLeftTop(2);
             }
+            else if (movedDirection == "teleport")
+            {
+                _timer.Stop();
+                manPctb.Top = btnDestLocationX + 5;
+                manPctb.Top = btnDestLocationY + 5;
+                tcs.SetResult(true);
+                
+                return;
+            }
             else
             {
                 _timer.Stop();
@@ -258,6 +267,29 @@ namespace LTDT
                     if (i - 1 >= 0)
                     {
                         adjList[soNode][getNodeId(i - 1, j)] = 1;
+                    }
+
+                    /*PhÍA Trên là trên dưới trái phải*/
+
+                    if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // right bottom
+                    {
+                        adjList[soNode][getNodeId(i + 1, j + 1)] = 1;
+
+                    }
+
+                    if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && i - 1 >= 0)//right top
+                    {
+                        adjList[soNode][getNodeId(i - 1, j + 1)] = 1;
+                    }
+
+                    if (j - 1 >= 0 && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // left bottom
+                    {
+                        adjList[soNode][getNodeId(i + 1, j - 1)] = 1;
+                    }
+
+                    if (j - 1 >= 0 && i - 1 >= 0)
+                    {
+                        adjList[soNode][getNodeId(i - 1, j - 1)] = 1;
                     }
 
                     soNode++;
@@ -362,45 +394,89 @@ namespace LTDT
 
         private string GetDirection(int preRowIndex, int preColIndex, int newRowIndex, int newColIndex)
         {
-            if (newRowIndex > preRowIndex)
+            if (newRowIndex - 1 > preRowIndex || newColIndex - 1 > preColIndex)
             {
-                return "down";
+                return "teleport";
+            }
+            else
+            {
+                if (newRowIndex > preRowIndex)
+                {
+                    if (newColIndex < preColIndex)
+                    {
+                        return "leftbottom";
+                    }
+
+                    if (newColIndex > preColIndex)
+                    {
+                        return "rightbottom";
+                    }
+                    return "down";
+                }
+
+                if (newRowIndex < preRowIndex)
+                {
+                    if (newColIndex > preColIndex)
+                    {
+                        return "righttop";
+                    }
+
+                    if (newColIndex < preColIndex)
+                    {
+                        return "lefttop";
+                    }
+                    return "up";
+                }
+
+                if (newColIndex > preColIndex)
+                {
+                    if (newRowIndex > preRowIndex)
+                    {
+                        return "rightbottom";
+                    }
+
+                    if (newRowIndex < preRowIndex)
+                    {
+                        return "righttop";
+                    }
+                    return "right";
+                }
+
+                if (newColIndex < preColIndex)
+                {
+                    if (newRowIndex < preRowIndex)
+                    {
+                        return "lefttop";
+                    }
+
+                    if (newRowIndex > preRowIndex)
+                    {
+                        return "leftbottom";
+                    }
+                    return "left";
+                }
+
+                //if (newColIndex > preColIndex && newRowIndex > preRowIndex)
+                //{
+                //    return "rightbottom";
+                //}
+
+                //if (newRowIndex > preRowIndex && newColIndex < preColIndex)
+                //{
+                //    return "leftbottom";
+                //}
+
+                //if (newRowIndex < preRowIndex && newColIndex > preRowIndex)
+                //{
+                //    return "righttop";
+                //}
+
+                //if (newColIndex < preColIndex && newRowIndex < preRowIndex)
+                //{
+                //    return "lefttop";
+                //}
             }
 
-            if (newRowIndex < preRowIndex)
-            {
-                return "up";
-            }
-
-            if (newColIndex > preColIndex)
-            {
-                return "right";
-            }
-
-            if (newColIndex < preColIndex)
-            {
-                return "left";
-            }
-
-            if (newColIndex > preColIndex && newRowIndex > preRowIndex)
-            {
-                return "rightbottom";
-            }
-
-            if (newRowIndex > preRowIndex && newColIndex < preColIndex)
-            {
-                return "leftbottom";
-            }
-
-            if (newRowIndex < preRowIndex && newColIndex > preRowIndex)
-            {
-                return "righttop";
-            }
-
-            if (newColIndex < preColIndex && newRowIndex < preRowIndex)
-            {
-                return "lefttop";
-            }
             return "";
         }
 

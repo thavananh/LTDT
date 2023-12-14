@@ -10,7 +10,7 @@ namespace LTDT
     {
         public static int BTNPANEL_WIDTH = 40;
         public static int BTNPANEL_HEIGHT = 40;
-        public static int ROW_NUMBER = 10;
-        public static int COL_NUMBER = 10;
+        public static int ROW_NUMBER = 5;
+        public static int COL_NUMBER = 5;
     }
 }

@@ -18,12 +18,12 @@ namespace LTDT
         public Color ColorBottom { get => colorBottom; set => colorBottom = value; }
         public float GradientAngle { get => gradientAngle; set => gradientAngle = value; }
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            LinearGradientBrush linearGradientBrush = new LinearGradientBrush(this.ClientRectangle, this.ColorTop, this.ColorBottom, this.GradientAngle);
-            Graphics graphic = e.Graphics;
-            graphic.FillRectangle(linearGradientBrush, this.ClientRectangle);
-            base.OnPaint(e);
-        }
+        //protected override void OnPaint(PaintEventArgs e)
+        //{
+        //    LinearGradientBrush linearGradientBrush = new LinearGradientBrush(this.ClientRectangle, this.ColorTop, this.ColorBottom, this.GradientAngle);
+        //    Graphics graphic = e.Graphics;
+        //    graphic.FillRectangle(linearGradientBrush, this.ClientRectangle);
+        //    base.OnPaint(e);
+        //}
     }
 }
