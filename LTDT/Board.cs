@@ -234,6 +234,8 @@ namespace LTDT
                         Height = ConstantVar.BTNPANEL_HEIGHT,
                         Location = new Point(j * ConstantVar.BTNPANEL_WIDTH, i * ConstantVar.BTNPANEL_HEIGHT),
                         BackgroundImageLayout = ImageLayout.Stretch,
+                        BackColor = SystemColors.Control,
+                        UseVisualStyleBackColor = true,
                         Tag = new buttonTag(i, j, 0, soNode),
                     };
                     btn.Click += btnPanel_Click;
@@ -402,7 +404,7 @@ namespace LTDT
                             pctbTag.ColIndex = tmp.ColIndex;
                             XuLyDiChuyen();
                             await tcs1.Task;
-                            MatrixButton[destButtonRowIndex][destButtonColIndex].BackColor = Color.Red;
+                            MatrixButton[destButtonRowIndex][destButtonColIndex].BackColor = Color.Lime;
                             break;
                         }
                     }
@@ -505,7 +507,14 @@ namespace LTDT
         public void CleanBoard()
         {
             _totalButtonSelect = 0;
-            ManPctb.SendToBack();
+            try
+            {
+                ManPctb.SendToBack();
+            }
+            catch (Exception e)
+            {
+
+            }
             for (int i = 0; i < MatrixButton.Count; i++)
             {
                 for (int j = 0; j < MatrixButton[i].Count; j++)
@@ -546,12 +555,10 @@ namespace LTDT
             int totalNode = ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER;
             int k = 0, z = 0;
 
+            
             for (int i = 0; i < totalNode; i++)
             {
-                if (i != 0)
-                {
-                    CleanBoard();
-                }
+                CleanBoard();
                 if (z >= ConstantVar.COL_NUMBER)
                 {
                     z = 0;
