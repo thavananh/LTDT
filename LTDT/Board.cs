@@ -32,6 +32,8 @@ namespace LTDT
         public List<List<Button>> MatrixButton { get => _matrixButton; set => _matrixButton = value; }
         public GradientPanel BoardPanel { get => _boardPanel; set => _boardPanel = value; }
         public PictureBox ManPctb { get => manPctb; set => manPctb = value; }
+        public TaskCompletionSource<bool> Tcs3 { get => tcs3; set => tcs3 = value; }
+        public TaskCompletionSource<bool> Tcs2 { get => tcs2; set => tcs2 = value; }
 
         public Board(GradientPanel boardPanel)
         {
@@ -194,10 +196,9 @@ namespace LTDT
             else if (movedDirection == "teleport")
             {
                 _timer.Stop();
-                manPctb.Top = btnDestLocationX + 5;
+                manPctb.Left = btnDestLocationX + 5;
                 manPctb.Top = btnDestLocationY + 5;
                 tcs.SetResult(true);
-                
                 return;
             }
             else
@@ -274,26 +275,26 @@ namespace LTDT
 
                     /*PhÍA Trên là trên dưới trái phải*/
 
-                    //if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // right bottom
-                    //{
-                    //    adjList[soNode][getNodeId(i + 1, j + 1)] = 1;
+                    if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // right bottom
+                    {
+                        adjList[soNode][getNodeId(i + 1, j + 1)] = 1;
 
-                    //}
+                    }
 
-                    //if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && i - 1 >= 0)//right top
-                    //{
-                    //    adjList[soNode][getNodeId(i - 1, j + 1)] = 1;
-                    //}
+                    if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && i - 1 >= 0)//right top
+                    {
+                        adjList[soNode][getNodeId(i - 1, j + 1)] = 1;
+                    }
 
-                    //if (j - 1 >= 0 && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // left bottom
-                    //{
-                    //    adjList[soNode][getNodeId(i + 1, j - 1)] = 1;
-                    //}
+                    if (j - 1 >= 0 && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // left bottom
+                    {
+                        adjList[soNode][getNodeId(i + 1, j - 1)] = 1;
+                    }
 
-                    //if (j - 1 >= 0 && i - 1 >= 0)
-                    //{
-                    //    adjList[soNode][getNodeId(i - 1, j - 1)] = 1;
-                    //}
+                    if (j - 1 >= 0 && i - 1 >= 0)
+                    {
+                        adjList[soNode][getNodeId(i - 1, j - 1)] = 1;
+                    }
                     soNode++;
                 }
             }
@@ -334,7 +335,7 @@ namespace LTDT
             ManPctb.BringToFront();
             _timer.Start();
             await tcs.Task;
-            await Task.Delay(0); // điều khiển di chuyển nhanh chậm
+            await Task.Delay(200); // điều khiển di chuyển nhanh chậm
             tcs1.SetResult(true);
 
         }
@@ -373,16 +374,18 @@ namespace LTDT
 
         public async void dfs()
         {
-            tcs2 = new TaskCompletionSource<bool>();
+            Tcs2 = new TaskCompletionSource<bool>();
             PictureBoxTag pctbTag = (PictureBoxTag)manPctb.Tag;
             Stack<int> stc = new Stack<int>();
+            int startVertices = getNodeId(pctbTag.RowIndex, pctbTag.ColIndex);
             stc.Push(getNodeId(pctbTag.RowIndex, pctbTag.ColIndex));
             int totalNode = ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER;
-            visited[getNodeId(pctbTag.RowIndex, pctbTag.ColIndex)] = true;
+            visited[startVertices] = true;
             string filePath = @"C:\Users\thava\source\repos\debugDfs\debugDfs\output_dfs_csharp_1.txt";
             using (StreamWriter writer = new StreamWriter(filePath, true))
             {
-                writer.WriteLine(getNodeId(pctbTag.RowIndex, pctbTag.ColIndex));
+                writer.WriteLine(startVertices.ToString());
+                frmMain.instance.KetQua.Text += "Đỉnh bắt đầu: " + startVertices.ToString() + "\n" + "Đường đi: ";
                 while (stc.Count > 0)
                 {
                     int v = stc.Peek();
@@ -391,7 +394,7 @@ namespace LTDT
                     stc.Pop();
                     for (int i = 0; i < totalNode; i++)
                     {
-                        if (!visited[i] && adjList[v][i] == 1)
+                        if (!visited[i] && adjList[v][i] != 0)
                         {
                             visited[i] = true;
                             stc.Push(i);
@@ -410,15 +413,59 @@ namespace LTDT
                     }
                 }
                 writer.WriteLine();
+                frmMain.instance.KetQua.Text += "\n";
             }
-            tcs2.SetResult(true);
+            Tcs2.SetResult(true);
         }
 
-        
+        public async void bfs()
+        {
+            Tcs2 = new TaskCompletionSource<bool>();
+            PictureBoxTag pctbTag = (PictureBoxTag)manPctb.Tag;
+            Queue<int> q = new Queue<int>();
+            int startVertices = getNodeId(pctbTag.RowIndex, pctbTag.ColIndex);
+            q.Enqueue(startVertices);
+            visited[startVertices] = true;
+            int totalNode = ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER;
+            string filePath = @"C:\Users\thava\source\repos\debugDfs\debugDfs\output_bfs_csharp.txt";
+            frmMain.instance.KetQua.Text += "Đỉnh bắt đầu: " + startVertices.ToString() + "\n" + "Đường đi: ";
+            using (StreamWriter writer = new StreamWriter(filePath, true))
+            {
+                writer.WriteLine(startVertices.ToString());
+                while (q.Count > 0)
+                {
+                    int v = q.Peek();
+                    frmMain.instance.KetQua.Text += v + " ";
+                    writer.Write(v.ToString() + " ");
+                    q.Dequeue();
+                    for (int i = 0; i < totalNode; ++i)
+                    {
+                        if (!visited[i] && adjList[v][i] != 0)
+                        {
+                            q.Enqueue(i);
+                            visited[i] = true;
+                            buttonTag tmp = (buttonTag)getButtonByNodeId(i).Tag;
+                            movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, tmp.RowIndex,
+                                tmp.ColIndex);
+                            destButtonRowIndex = tmp.RowIndex;
+                            destButtonColIndex = tmp.ColIndex;
+                            pctbTag.RowIndex = tmp.RowIndex;
+                            pctbTag.ColIndex = tmp.ColIndex;
+                            XuLyDiChuyen();
+                            await tcs1.Task;
+                            MatrixButton[destButtonRowIndex][destButtonColIndex].BackColor = Color.Lime;
+                        }
+                    }
+                }
+                frmMain.instance.KetQua.Text += "\n";
+                writer.WriteLine();
+            }
+            Tcs2.SetResult(true);
+        }
 
         private string GetDirection(int preRowIndex, int preColIndex, int newRowIndex, int newColIndex)
         {
-            if (newRowIndex - 1 > preRowIndex || newColIndex - 1 > preColIndex)
+            if ((newRowIndex - 1 > preRowIndex || newColIndex - 1 > preColIndex) || (preRowIndex - 1 > newRowIndex || preColIndex - 1 > newColIndex))
             {
                 return "teleport";
             }
@@ -531,7 +578,9 @@ namespace LTDT
             }
         }
 
-        public async void testDFS()
+        private TaskCompletionSource<bool> tcs3;
+
+        public async void testTraversal(string traversalType)
         {
             /*
              btn.BackgroundImage = Properties.Resources.placeholder;
@@ -554,8 +603,7 @@ namespace LTDT
              */
             int totalNode = ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER;
             int k = 0, z = 0;
-
-            
+            tcs3 = new TaskCompletionSource<bool>();
             for (int i = 0; i < totalNode; i++)
             {
                 CleanBoard();
@@ -581,10 +629,19 @@ namespace LTDT
                     BorderStyle = BorderStyle.FixedSingle
                 };
                 BoardPanel.Controls.Add(ManPctb);
-                dfs();
-                await tcs2.Task;
+                //dfs();
+                if (traversalType == "dfs")
+                {
+                    dfs();
+                }
+                else
+                {
+                    bfs();
+                }
+                await Tcs2.Task;
                 z++;
             }
+            tcs3.SetResult(true);
         }
 
         private void MoveObjectRight(int speed)

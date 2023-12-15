@@ -47,19 +47,42 @@ namespace LTDT
             Application.Exit();
         }
 
-        private void btnRun_Click(object sender, EventArgs e)
+        private async void btnRun_Click(object sender, EventArgs e)
         {
-            board.dfs();
+            btnClean.Enabled = false;
+            btnTest.Enabled = false;
+            if (rdoBFS.Checked)
+            {
+                board.bfs();
+            }
+            else if (rdoDFS.Checked)
+            {
+                board.dfs();
+            }
+            await board.Tcs2.Task;
+            btnClean.Enabled = true;
+            btnTest.Enabled = true;
         }
-
         private void btnXoaCoVaDich_Click(object sender, EventArgs e)
         {
             board.CleanBoard();
         }
 
-        private void btnTest_Click(object sender, EventArgs e)
+        private async void btnTest_Click(object sender, EventArgs e)
         {
-            board.testDFS();
+            btnRun.Enabled = false;
+            btnClean.Enabled = false;
+            if (rdoBFS.Checked)
+            {
+                board.testTraversal("bfs");
+            }
+            else if (rdoDFS.Checked)
+            {
+                board.testTraversal("dfs");
+            }
+            await board.Tcs3.Task;
+            btnRun.Enabled = true;
+            btnClean.Enabled = true;
         }
     }
 }
