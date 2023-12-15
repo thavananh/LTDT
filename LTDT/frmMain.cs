@@ -19,8 +19,11 @@ namespace LTDT
         private Board board;
         public static frmMain instance;
         private RichTextBox ketQua;
+        private RichTextBox maTranKe;
+
 
         public RichTextBox KetQua { get => ketQua; set => ketQua = value; }
+        public RichTextBox MaTranKe { get => maTranKe; set => maTranKe = value; }
 
         #endregion
 
@@ -29,6 +32,7 @@ namespace LTDT
             InitializeComponent();
             instance = this;
             this.KetQua = rtxKetQua;
+            this.MaTranKe = rtxtMaTranKe;
         }
 
         private void frmMain_Load(object sender, EventArgs e)
@@ -46,6 +50,16 @@ namespace LTDT
         private void btnRun_Click(object sender, EventArgs e)
         {
             board.dfs();
+        }
+
+        private void btnXoaCoVaDich_Click(object sender, EventArgs e)
+        {
+            board.CleanBoard();
+        }
+
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+            board.testDFS();
         }
     }
 }

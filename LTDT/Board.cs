@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -271,31 +272,41 @@ namespace LTDT
 
                     /*PhÍA Trên là trên dưới trái phải*/
 
-                    if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // right bottom
-                    {
-                        adjList[soNode][getNodeId(i + 1, j + 1)] = 1;
+                    //if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // right bottom
+                    //{
+                    //    adjList[soNode][getNodeId(i + 1, j + 1)] = 1;
 
-                    }
+                    //}
 
-                    if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && i - 1 >= 0)//right top
-                    {
-                        adjList[soNode][getNodeId(i - 1, j + 1)] = 1;
-                    }
+                    //if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && i - 1 >= 0)//right top
+                    //{
+                    //    adjList[soNode][getNodeId(i - 1, j + 1)] = 1;
+                    //}
 
-                    if (j - 1 >= 0 && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // left bottom
-                    {
-                        adjList[soNode][getNodeId(i + 1, j - 1)] = 1;
-                    }
+                    //if (j - 1 >= 0 && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // left bottom
+                    //{
+                    //    adjList[soNode][getNodeId(i + 1, j - 1)] = 1;
+                    //}
 
-                    if (j - 1 >= 0 && i - 1 >= 0)
-                    {
-                        adjList[soNode][getNodeId(i - 1, j - 1)] = 1;
-                    }
-
+                    //if (j - 1 >= 0 && i - 1 >= 0)
+                    //{
+                    //    adjList[soNode][getNodeId(i - 1, j - 1)] = 1;
+                    //}
                     soNode++;
                 }
             }
-            
+
+            frmMain.instance.MaTranKe.Text += (ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER).ToString() + "\n";
+
+            for (int i = 0; i < adjList.Count; i++)
+            {
+                for (int j = 0; j < adjList[i].Count; j++)
+                {
+                    frmMain.instance.MaTranKe.Text += adjList[i][j].ToString() + " ";
+                }
+
+                frmMain.instance.MaTranKe.Text += "\n";
+            }
         }
 
         private Button getButton(int i, int j)
@@ -310,6 +321,7 @@ namespace LTDT
 
         private TaskCompletionSource<bool> tcs;
         private TaskCompletionSource<bool> tcs1;
+        private TaskCompletionSource<bool> tcs2;
 
         public async void XuLyDiChuyen()
         {
@@ -317,10 +329,10 @@ namespace LTDT
             tcs1 = new TaskCompletionSource<bool>();
             //manPctbStartLocationX = manPctb.Location.X;
             //manPctbStartLocationY = manPctb.Location.Y;
-            manPctb.BringToFront();
+            ManPctb.BringToFront();
             _timer.Start();
             await tcs.Task;
-            await Task.Delay(500);
+            await Task.Delay(0); // điều khiển di chuyển nhanh chậm
             tcs1.SetResult(true);
 
         }
@@ -359,35 +371,45 @@ namespace LTDT
 
         public async void dfs()
         {
+            tcs2 = new TaskCompletionSource<bool>();
             PictureBoxTag pctbTag = (PictureBoxTag)manPctb.Tag;
             Stack<int> stc = new Stack<int>();
             stc.Push(getNodeId(pctbTag.RowIndex, pctbTag.ColIndex));
             int totalNode = ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER;
             visited[getNodeId(pctbTag.RowIndex, pctbTag.ColIndex)] = true;
-            while (stc.Count > 0)
+            string filePath = @"C:\Users\thava\source\repos\debugDfs\debugDfs\output_dfs_csharp_1.txt";
+            using (StreamWriter writer = new StreamWriter(filePath, true))
             {
-                int v = stc.Peek();
-                frmMain.instance.KetQua.Text += v + " ";
-                stc.Pop();
-                for (int i = 0; i < totalNode; i++)
+                writer.WriteLine(getNodeId(pctbTag.RowIndex, pctbTag.ColIndex));
+                while (stc.Count > 0)
                 {
-                    if (!visited[i] && adjList[v][i] == 1)
+                    int v = stc.Peek();
+                    writer.Write(v.ToString() + " ");
+                    frmMain.instance.KetQua.Text += v + " ";
+                    stc.Pop();
+                    for (int i = 0; i < totalNode; i++)
                     {
-                        visited[i] = true;
-                        stc.Push(i);
-                        buttonTag tmp = (buttonTag)getButtonByNodeId(i).Tag;
-                        movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, tmp.RowIndex , tmp.ColIndex);
-                        destButtonRowIndex = tmp.RowIndex;
-                        destButtonColIndex = tmp.ColIndex;
-                        pctbTag.RowIndex = tmp.RowIndex;
-                        pctbTag.ColIndex = tmp.ColIndex;
-                        XuLyDiChuyen();
-                        await tcs1.Task;
-                        MatrixButton[destButtonRowIndex][destButtonColIndex].BackColor = Color.Red;
-                        break;
+                        if (!visited[i] && adjList[v][i] == 1)
+                        {
+                            visited[i] = true;
+                            stc.Push(i);
+                            buttonTag tmp = (buttonTag)getButtonByNodeId(i).Tag;
+                            movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, tmp.RowIndex,
+                                tmp.ColIndex);
+                            destButtonRowIndex = tmp.RowIndex;
+                            destButtonColIndex = tmp.ColIndex;
+                            pctbTag.RowIndex = tmp.RowIndex;
+                            pctbTag.ColIndex = tmp.ColIndex;
+                            XuLyDiChuyen();
+                            await tcs1.Task;
+                            MatrixButton[destButtonRowIndex][destButtonColIndex].BackColor = Color.Red;
+                            break;
+                        }
                     }
                 }
+                writer.WriteLine();
             }
+            tcs2.SetResult(true);
         }
 
         
@@ -478,6 +500,84 @@ namespace LTDT
             }
 
             return "";
+        }
+
+        public void CleanBoard()
+        {
+            _totalButtonSelect = 0;
+            ManPctb.SendToBack();
+            for (int i = 0; i < MatrixButton.Count; i++)
+            {
+                for (int j = 0; j < MatrixButton[i].Count; j++)
+                {
+                    MatrixButton[i][j].BackColor = SystemColors.Control;
+                    MatrixButton[i][j].UseVisualStyleBackColor = true;
+                    MatrixButton[i][j].BackgroundImage = null;
+                }
+            }
+            visited = new List<bool>();
+            for (int i = 0; i < ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER; i++)
+            {
+                visited.Add(false);
+            }
+        }
+
+        public async void testDFS()
+        {
+            /*
+             btn.BackgroundImage = Properties.Resources.placeholder;
+               buttonTag tagTmp = (buttonTag)btn.Tag;
+               tagTmp.ImageTag = 4;
+               btn.Tag = tagTmp;
+               ManPctb = new PictureBox()
+               {
+                   Width = 30,
+                   Height = 30,
+                   //Location = new Point(ConstantVar.BTNPANEL_WIDTH, ConstantVar.BTNPANEL_HEIGHT), // x y
+                   Location = new Point(btn.Location.X + 5, btn.Location.Y + 5),
+                   BackgroundImageLayout = ImageLayout.Stretch,
+                   Tag = new PictureBoxTag() { RowIndex = tagTmp.RowIndex, ColIndex = tagTmp.ColIndex},
+                   BackgroundImage = Properties.Resources.man,
+                   BackColor = Color.Transparent,
+                   BorderStyle = BorderStyle.FixedSingle
+               };
+               BoardPanel.Controls.Add(ManPctb);
+             */
+            int totalNode = ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER;
+            int k = 0, z = 0;
+
+            for (int i = 0; i < totalNode; i++)
+            {
+                if (i != 0)
+                {
+                    CleanBoard();
+                }
+                if (z >= ConstantVar.COL_NUMBER)
+                {
+                    z = 0;
+                    k++;
+                }
+                MatrixButton[k][z].BackgroundImage = Properties.Resources.placeholder;
+                buttonTag tagTmp = (buttonTag)MatrixButton[k][z].Tag;
+                tagTmp.ImageTag = 4;
+                MatrixButton[k][z].Tag = tagTmp;
+                ManPctb = new PictureBox()
+                {
+                    Width = 30,
+                    Height = 30,
+                    //Location = new Point(ConstantVar.BTNPANEL_WIDTH, ConstantVar.BTNPANEL_HEIGHT), // x y
+                    Location = new Point(MatrixButton[k][z].Location.X + 5, MatrixButton[k][z].Location.Y + 5),
+                    BackgroundImageLayout = ImageLayout.Stretch,
+                    Tag = new PictureBoxTag() { RowIndex = tagTmp.RowIndex, ColIndex = tagTmp.ColIndex },
+                    BackgroundImage = Properties.Resources.man,
+                    BackColor = Color.Transparent,
+                    BorderStyle = BorderStyle.FixedSingle
+                };
+                BoardPanel.Controls.Add(ManPctb);
+                dfs();
+                await tcs2.Task;
+                z++;
+            }
         }
 
         private void MoveObjectRight(int speed)
