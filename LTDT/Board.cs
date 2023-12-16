@@ -15,6 +15,7 @@ namespace LTDT
         private GradientPanel _boardPanel;
         private List<List<Button>> _matrixButton;
         private List<List<int>> adjList;
+        private List<List<int>> adjList_original;
         private Obstacle _rock = new Obstacle(1, Properties.Resources.rocks);
         private Obstacle _snowman = new Obstacle(2, Properties.Resources.snowman);
         private Obstacle _tree = new Obstacle(3, Properties.Resources.tree);
@@ -56,6 +57,10 @@ namespace LTDT
         private void btnPanel_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
+            if (btn.BackgroundImage != null || isRun == true)
+            {
+                return;
+            }
             if (((buttonTag)btn.Tag).ImageTag != 0)
             {
                 btn.BackgroundImage = null;
@@ -100,6 +105,12 @@ namespace LTDT
                 buttonTag tagTmp = (buttonTag)btn.Tag;
                 tagTmp.ImageTag = _randObstacles[randNum].IdImage;
                 btn.Tag = tagTmp;
+                int nodeID = getNodeId(tagTmp.RowIndex, tagTmp.ColIndex);
+                for (int i = 0; i < ConstantVar.ROW_NUMBER * ConstantVar.COL_NUMBER; i++)
+                {
+                    adjList[i][nodeID] = 0;
+                    adjList[nodeID][i] = 0;
+                }
             }
             _totalButtonSelect++;
         }
@@ -213,12 +224,15 @@ namespace LTDT
         {
             MatrixButton = new List<List<Button>>();
             adjList = new List<List<int>>();
+            adjList_original = new List<List<int>>();
             for (int i = 0; i < ConstantVar.ROW_NUMBER * ConstantVar.COL_NUMBER; i++)
             {
                 AdjList.Add(new List<int>(ConstantVar.ROW_NUMBER * ConstantVar.COL_NUMBER));
+                adjList_original.Add(new List<int>(ConstantVar.ROW_NUMBER * ConstantVar.COL_NUMBER));
                 for (int j = 0; j < ConstantVar.ROW_NUMBER * ConstantVar.COL_NUMBER; j++)
                 {
                     AdjList[i].Add(0);
+                    adjList_original[i].Add(0);
                 }
             }
 
@@ -257,21 +271,25 @@ namespace LTDT
                     if (j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER)
                     {
                         AdjList[soNode][getNodeId(i, j + 1)] = 1;
+                        adjList_original[soNode][getNodeId(i, j + 1)] = 1;
                     }
 
                     if (j - 1 >= 0)
                     {
                         AdjList[soNode][getNodeId(i, j - 1)] = 1;
+                        adjList_original[soNode][getNodeId(i, j - 1)] = 1;
                     }
 
                     if (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)
                     {
                         AdjList[soNode][getNodeId(i + 1, j)] = 1;
+                        adjList_original[soNode][getNodeId(i + 1, j)] = 1;
                     }
 
                     if (i - 1 >= 0)
                     {
                         AdjList[soNode][getNodeId(i - 1, j)] = 1;
+                        adjList_original[soNode][getNodeId(i - 1, j)] = 1;
                     }
 
                     /*PhÍA Trên là trên dưới trái phải*/
@@ -279,26 +297,31 @@ namespace LTDT
                     if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // right bottom
                     {
                         AdjList[soNode][getNodeId(i + 1, j + 1)] = 1;
-
+                        adjList_original[soNode][getNodeId(i + 1, j + 1)] = 1;
                     }
 
                     if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && i - 1 >= 0)//right top
                     {
                         AdjList[soNode][getNodeId(i - 1, j + 1)] = 1;
+                        adjList_original[soNode][getNodeId(i - 1, j + 1)] = 1;
                     }
 
                     if (j - 1 >= 0 && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // left bottom
                     {
                         AdjList[soNode][getNodeId(i + 1, j - 1)] = 1;
+                        adjList_original[soNode][getNodeId(i + 1, j - 1)] = 1;
                     }
 
                     if (j - 1 >= 0 && i - 1 >= 0)
                     {
                         AdjList[soNode][getNodeId(i - 1, j - 1)] = 1;
+                        adjList_original[soNode][getNodeId(i - 1, j - 1)] = 1;
                     }
                     soNode++;
                 }
             }
+
+            
 
             //frmMain.instance.MaTranKe.Text += (ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER).ToString() + "\n";
 
@@ -326,6 +349,7 @@ namespace LTDT
         private TaskCompletionSource<bool> tcs;
         private TaskCompletionSource<bool> tcs1;
         private TaskCompletionSource<bool> tcs2;
+        private bool isRun = false;
 
         public async void XuLyDiChuyen()
         {
@@ -375,11 +399,13 @@ namespace LTDT
 
         public async void dfs()
         {
+            int dem = 0;
+            isRun = true;
             Tcs2 = new TaskCompletionSource<bool>();
             PictureBoxTag pctbTag = (PictureBoxTag)manPctb.Tag;
             Stack<int> stc = new Stack<int>();
             int startVertices = getNodeId(pctbTag.RowIndex, pctbTag.ColIndex);
-            stc.Push(getNodeId(pctbTag.RowIndex, pctbTag.ColIndex));
+            stc.Push(startVertices);
             int totalNode = ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER;
             visited[startVertices] = true;
             string filePath = @"C:\Users\thava\source\repos\debugDfs\debugDfs\output_dfs_csharp_1.txt";
@@ -389,16 +415,20 @@ namespace LTDT
                 frmMain.instance.KetQua.Text += "Đỉnh bắt đầu: " + startVertices.ToString() + "\n" + "Đường đi: ";
                 while (stc.Count > 0)
                 {
+                    if (dem == totalNode - 1)
+                    {
+                        break;
+                    }
                     int v = stc.Peek();
-                    writer.Write(v.ToString() + " ");
-                    frmMain.instance.KetQua.Text += v + " ";
-                    stc.Pop();
+                    int flag = 0;
                     for (int i = 0; i < totalNode; i++)
                     {
                         if (!visited[i] && AdjList[v][i] != 0)
                         {
                             visited[i] = true;
                             stc.Push(i);
+                            writer.Write(i.ToString() + " ");
+                            frmMain.instance.KetQua.Text += i + " ";
                             buttonTag tmp = (buttonTag)getButtonByNodeId(i).Tag;
                             movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, tmp.RowIndex,
                                 tmp.ColIndex);
@@ -409,18 +439,27 @@ namespace LTDT
                             XuLyDiChuyen();
                             await tcs1.Task;
                             MatrixButton[destButtonRowIndex][destButtonColIndex].BackColor = Color.Lime;
+                            dem++;
+                            flag = 1;
                             break;
                         }
+                    }
+
+                    if (flag == 0)
+                    {
+                        stc.Pop();
                     }
                 }
                 writer.WriteLine();
                 frmMain.instance.KetQua.Text += "\n";
             }
             Tcs2.SetResult(true);
+            isRun = false;
         }
 
         public async void bfs()
         {
+            isRun = true;
             Tcs2 = new TaskCompletionSource<bool>();
             PictureBoxTag pctbTag = (PictureBoxTag)manPctb.Tag;
             Queue<int> q = new Queue<int>();
@@ -462,6 +501,7 @@ namespace LTDT
                 writer.WriteLine();
             }
             Tcs2.SetResult(true);
+            isRun = false;
         }
 
         private string GetDirection(int preRowIndex, int preColIndex, int newRowIndex, int newColIndex)
@@ -576,6 +616,14 @@ namespace LTDT
             for (int i = 0; i < ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER; i++)
             {
                 visited.Add(false);
+            }
+            
+            for (int i = 0; i < adjList_original.Count; i++)
+            {
+                for (int j = 0; j < adjList_original[i].Count; j++)
+                {
+                    adjList[i][j] = adjList_original[i][j];
+                }
             }
         }
 

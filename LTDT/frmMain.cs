@@ -19,12 +19,15 @@ namespace LTDT
         private Board board;
         public static frmMain instance;
         private RichTextBox ketQua;
-        private RichTextBox maTranKe;
+        //private RichTextBox maTranKe;
         private List<List<int>> _adjList;
+        private ListView _lstAdjMatrix;
 
 
         public RichTextBox KetQua { get => ketQua; set => ketQua = value; }
-        public RichTextBox MaTranKe { get => maTranKe; set => maTranKe = value; }
+        public ListView LstAdjMatrix { get => _lstAdjMatrix; set => _lstAdjMatrix = value; }
+
+        //public RichTextBox MaTranKe { get => maTranKe; set => maTranKe = value; }
 
         #endregion
 
@@ -40,7 +43,14 @@ namespace LTDT
         {
             board = new Board(gradientPanel1);
             board.drawBoardPanel();
+            loadAdjMatrix();
+            this.LstAdjMatrix = lstvMaTranKe;
+        }
+
+        public void loadAdjMatrix()
+        {
             _adjList = new List<List<int>>(board.AdjList);
+            lstvMaTranKe.Clear();
             lstvMaTranKe.Columns.Add("", 45);
             for (int i = 0; i < ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER; i++)
             {
@@ -65,10 +75,17 @@ namespace LTDT
             Application.Exit();
         }
 
+        private TaskCompletionSource<bool> tcsLoadAdjMatrix;
+
         private async void btnRun_Click(object sender, EventArgs e)
         {
+            //tcsLoadAdjMatrix = new TaskCompletionSource<bool>();
             btnClean.Enabled = false;
             btnTest.Enabled = false;
+            btnRun.Enabled = false;
+            //loadAdjMatrix();
+            //tcsLoadAdjMatrix.SetResult(true);
+            //await tcsLoadAdjMatrix.Task;
             if (rdoBFS.Checked)
             {
                 board.bfs();
@@ -80,6 +97,7 @@ namespace LTDT
             await board.Tcs2.Task;
             btnClean.Enabled = true;
             btnTest.Enabled = true;
+            btnRun.Enabled = true;
         }
         private void btnXoaCoVaDich_Click(object sender, EventArgs e)
         {
