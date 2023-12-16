@@ -14,7 +14,7 @@ namespace LTDT
     {
         private GradientPanel _boardPanel;
         private List<List<Button>> _matrixButton;
-        private List<List<int>> adjList = new List<List<int>>(ConstantVar.ROW_NUMBER);
+        private List<List<int>> adjList;
         private Obstacle _rock = new Obstacle(1, Properties.Resources.rocks);
         private Obstacle _snowman = new Obstacle(2, Properties.Resources.snowman);
         private Obstacle _tree = new Obstacle(3, Properties.Resources.tree);
@@ -34,6 +34,7 @@ namespace LTDT
         public PictureBox ManPctb { get => manPctb; set => manPctb = value; }
         public TaskCompletionSource<bool> Tcs3 { get => tcs3; set => tcs3 = value; }
         public TaskCompletionSource<bool> Tcs2 { get => tcs2; set => tcs2 = value; }
+        public List<List<int>> AdjList { get => adjList; set => adjList = value; }
 
         public Board(GradientPanel boardPanel)
         {
@@ -211,13 +212,13 @@ namespace LTDT
         public void drawBoardPanel()
         {
             MatrixButton = new List<List<Button>>();
-
+            adjList = new List<List<int>>();
             for (int i = 0; i < ConstantVar.ROW_NUMBER * ConstantVar.COL_NUMBER; i++)
             {
-                adjList.Add(new List<int>(ConstantVar.ROW_NUMBER * ConstantVar.COL_NUMBER));
+                AdjList.Add(new List<int>(ConstantVar.ROW_NUMBER * ConstantVar.COL_NUMBER));
                 for (int j = 0; j < ConstantVar.ROW_NUMBER * ConstantVar.COL_NUMBER; j++)
                 {
-                    adjList[i].Add(0);
+                    AdjList[i].Add(0);
                 }
             }
 
@@ -255,61 +256,61 @@ namespace LTDT
                     
                     if (j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER)
                     {
-                        adjList[soNode][getNodeId(i, j + 1)] = 1;
+                        AdjList[soNode][getNodeId(i, j + 1)] = 1;
                     }
 
                     if (j - 1 >= 0)
                     {
-                        adjList[soNode][getNodeId(i, j - 1)] = 1;
+                        AdjList[soNode][getNodeId(i, j - 1)] = 1;
                     }
 
                     if (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)
                     {
-                        adjList[soNode][getNodeId(i + 1, j)] = 1;
+                        AdjList[soNode][getNodeId(i + 1, j)] = 1;
                     }
 
                     if (i - 1 >= 0)
                     {
-                        adjList[soNode][getNodeId(i - 1, j)] = 1;
+                        AdjList[soNode][getNodeId(i - 1, j)] = 1;
                     }
 
                     /*PhÍA Trên là trên dưới trái phải*/
 
                     if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // right bottom
                     {
-                        adjList[soNode][getNodeId(i + 1, j + 1)] = 1;
+                        AdjList[soNode][getNodeId(i + 1, j + 1)] = 1;
 
                     }
 
                     if ((j + 1 > 0 && j + 1 < ConstantVar.COL_NUMBER) && i - 1 >= 0)//right top
                     {
-                        adjList[soNode][getNodeId(i - 1, j + 1)] = 1;
+                        AdjList[soNode][getNodeId(i - 1, j + 1)] = 1;
                     }
 
                     if (j - 1 >= 0 && (i + 1 > 0 && i + 1 < ConstantVar.ROW_NUMBER)) // left bottom
                     {
-                        adjList[soNode][getNodeId(i + 1, j - 1)] = 1;
+                        AdjList[soNode][getNodeId(i + 1, j - 1)] = 1;
                     }
 
                     if (j - 1 >= 0 && i - 1 >= 0)
                     {
-                        adjList[soNode][getNodeId(i - 1, j - 1)] = 1;
+                        AdjList[soNode][getNodeId(i - 1, j - 1)] = 1;
                     }
                     soNode++;
                 }
             }
 
-            frmMain.instance.MaTranKe.Text += (ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER).ToString() + "\n";
+            //frmMain.instance.MaTranKe.Text += (ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER).ToString() + "\n";
 
-            for (int i = 0; i < adjList.Count; i++)
-            {
-                for (int j = 0; j < adjList[i].Count; j++)
-                {
-                    frmMain.instance.MaTranKe.Text += adjList[i][j].ToString() + " ";
-                }
+            //for (int i = 0; i < AdjList.Count; i++)
+            //{
+            //    for (int j = 0; j < AdjList[i].Count; j++)
+            //    {
+            //        frmMain.instance.MaTranKe.Text += AdjList[i][j].ToString() + " ";
+            //    }
 
-                frmMain.instance.MaTranKe.Text += "\n";
-            }
+            //    frmMain.instance.MaTranKe.Text += "\n";
+            //}
         }
 
         private Button getButton(int i, int j)
@@ -335,7 +336,7 @@ namespace LTDT
             ManPctb.BringToFront();
             _timer.Start();
             await tcs.Task;
-            await Task.Delay(200); // điều khiển di chuyển nhanh chậm
+            await Task.Delay(0); // điều khiển di chuyển nhanh chậm
             tcs1.SetResult(true);
 
         }
@@ -394,7 +395,7 @@ namespace LTDT
                     stc.Pop();
                     for (int i = 0; i < totalNode; i++)
                     {
-                        if (!visited[i] && adjList[v][i] != 0)
+                        if (!visited[i] && AdjList[v][i] != 0)
                         {
                             visited[i] = true;
                             stc.Push(i);
@@ -440,7 +441,7 @@ namespace LTDT
                     q.Dequeue();
                     for (int i = 0; i < totalNode; ++i)
                     {
-                        if (!visited[i] && adjList[v][i] != 0)
+                        if (!visited[i] && AdjList[v][i] != 0)
                         {
                             q.Enqueue(i);
                             visited[i] = true;

@@ -34,8 +34,8 @@
             this.btnRun = new System.Windows.Forms.Button();
             this.btnTest = new System.Windows.Forms.Button();
             this.rtxKetQua = new System.Windows.Forms.RichTextBox();
-            this.rtxtMaTranKe = new System.Windows.Forms.RichTextBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lstvMaTranKe = new System.Windows.Forms.ListView();
             this.gradientLabel3 = new LTDT.GradientLabel();
             this.gradientLabel2 = new LTDT.GradientLabel();
             this.gradientPanel2 = new LTDT.GradientPanel();
@@ -105,7 +105,8 @@
             // 
             // rtxKetQua
             // 
-            this.rtxKetQua.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.rtxKetQua.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.rtxKetQua.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(182)))), ((int)(((byte)(197)))));
             this.rtxKetQua.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtxKetQua.Location = new System.Drawing.Point(9, 304);
@@ -114,29 +115,31 @@
             this.rtxKetQua.TabIndex = 6;
             this.rtxKetQua.Text = "";
             // 
-            // rtxtMaTranKe
-            // 
-            this.rtxtMaTranKe.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.rtxtMaTranKe.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(182)))), ((int)(((byte)(197)))));
-            this.rtxtMaTranKe.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtxtMaTranKe.Location = new System.Drawing.Point(9, 39);
-            this.rtxtMaTranKe.Name = "rtxtMaTranKe";
-            this.rtxtMaTranKe.Size = new System.Drawing.Size(325, 229);
-            this.rtxtMaTranKe.TabIndex = 7;
-            this.rtxtMaTranKe.Text = "";
-            // 
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.lstvMaTranKe);
             this.panel1.Controls.Add(this.gradientLabel3);
-            this.panel1.Controls.Add(this.rtxtMaTranKe);
             this.panel1.Controls.Add(this.gradientLabel2);
             this.panel1.Controls.Add(this.rtxKetQua);
             this.panel1.Location = new System.Drawing.Point(419, 146);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(343, 406);
             this.panel1.TabIndex = 10;
+            // 
+            // lstvMaTranKe
+            // 
+            this.lstvMaTranKe.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstvMaTranKe.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(182)))), ((int)(((byte)(197)))));
+            this.lstvMaTranKe.HideSelection = false;
+            this.lstvMaTranKe.Location = new System.Drawing.Point(9, 38);
+            this.lstvMaTranKe.Name = "lstvMaTranKe";
+            this.lstvMaTranKe.Size = new System.Drawing.Size(325, 221);
+            this.lstvMaTranKe.TabIndex = 11;
+            this.lstvMaTranKe.UseCompatibleStateImageBehavior = false;
+            this.lstvMaTranKe.View = System.Windows.Forms.View.Details;
             // 
             // gradientLabel3
             // 
@@ -222,6 +225,9 @@
             // 
             // gradientPanel1
             // 
+            this.gradientPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gradientPanel1.AutoSize = true;
             this.gradientPanel1.ColorBottom = System.Drawing.Color.Transparent;
             this.gradientPanel1.ColorTop = System.Drawing.Color.Transparent;
@@ -274,12 +280,12 @@
         private System.Windows.Forms.Button btnRun;
         private System.Windows.Forms.Button btnTest;
         private System.Windows.Forms.RichTextBox rtxKetQua;
-        private System.Windows.Forms.RichTextBox rtxtMaTranKe;
         private GradientPanel gradientPanel2;
         private System.Windows.Forms.PictureBox pictureBox1;
         private GradientLabel gradientLabel1;
         private GradientLabel gradientLabel2;
         private System.Windows.Forms.Panel panel1;
         private GradientLabel gradientLabel3;
+        private System.Windows.Forms.ListView lstvMaTranKe;
     }
 }

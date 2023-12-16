@@ -20,6 +20,7 @@ namespace LTDT
         public static frmMain instance;
         private RichTextBox ketQua;
         private RichTextBox maTranKe;
+        private List<List<int>> _adjList;
 
 
         public RichTextBox KetQua { get => ketQua; set => ketQua = value; }
@@ -32,14 +33,31 @@ namespace LTDT
             InitializeComponent();
             instance = this;
             this.KetQua = rtxKetQua;
-            this.MaTranKe = rtxtMaTranKe;
+            //this.MaTranKe = rtxtMaTranKe;
         }
 
         private void frmMain_Load(object sender, EventArgs e)
         {
             board = new Board(gradientPanel1);
             board.drawBoardPanel();
+            _adjList = new List<List<int>>(board.AdjList);
+            lstvMaTranKe.Columns.Add("", 45);
+            for (int i = 0; i < ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER; i++)
+            {
+                lstvMaTranKe.Columns.Add("v" + i.ToString(), 45, HorizontalAlignment.Center);
+            }
 
+            int v = 0;
+            foreach (var row in _adjList)
+            {
+                ListViewItem item = new ListViewItem("v" + v.ToString());
+                for (int i = 0; i < row.Count; i++)
+                {
+                    item.SubItems.Add(row[i].ToString());
+                }
+                lstvMaTranKe.Items.Add(item);
+                v++;
+            }
         }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
