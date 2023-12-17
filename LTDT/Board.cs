@@ -22,7 +22,9 @@ namespace LTDT
         {
             Interval = 1,
         };
-        
+
+        private bool isFind = false;
+        private bool isTest = false;
 
         private List<bool> visited;
 
@@ -327,31 +329,6 @@ namespace LTDT
                     soNode++;
                 }
             }
-
-            string filePath = @"C:\Users\thava\source\repos\debugDfs\debugDfs\DOTHI.txt";
-            using (StreamWriter writer = new StreamWriter(filePath))
-            {
-                for (int i = 0; i < adjList.Count; i++)
-                {
-                    for (int j = 0; j < adjList[i].Count; j++)
-                    {
-                        writer.Write(adjList[i][j].ToString() + " ");
-                    }
-                    writer.WriteLine();
-                }
-            }
-
-            //frmMain.instance.MaTranKe.Text += (ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER).ToString() + "\n";
-
-            //for (int i = 0; i < AdjList.Count; i++)
-            //{
-            //    for (int j = 0; j < AdjList[i].Count; j++)
-            //    {
-            //        frmMain.instance.MaTranKe.Text += AdjList[i][j].ToString() + " ";
-            //    }
-
-            //    frmMain.instance.MaTranKe.Text += "\n";
-            //}
         }
 
         private Button getButton(int i, int j)
@@ -407,63 +384,63 @@ namespace LTDT
             int totalNode = ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER;
             visited[startVertices] = true;
             int lastVisitNode = -1;
-            int lastVertices;
-            string filePath = @"C:\Users\thava\source\repos\debugDfs\debugDfs\output_dfs_csharp.txt";
-            using (StreamWriter writer = new StreamWriter(filePath, true))
+            frmMain.instance.KetQua.Text += "Đỉnh bắt đầu: " + startVertices.ToString() + "\n" + "Đường đi: ";
+            frmMain.instance.KetQua.Text += startVertices.ToString() + " ";
+            while (stc.Count > 0)
             {
-                writer.WriteLine(startVertices.ToString());
-                frmMain.instance.KetQua.Text += "Đỉnh bắt đầu: " + startVertices.ToString() + "\n" + "Đường đi: ";
-                while (stc.Count > 0)
+                if (dem == totalNode - 1)
                 {
+                    break;
+                }
+                int v = stc.Peek();
+                int flag = 0;
                     
-                    if (dem == totalNode - 1)
+                for (int i = 0; i < totalNode; i++)
+                {
+                    if (!visited[i] && AdjList[v][i] != 0)
                     {
+                        visited[i] = true;
+                        frmMain.instance.KetQua.Text += i + " ";
+                        stc.Push(i);
+                        buttonTag tmp = (buttonTag)getButtonByNodeId(i).Tag;
+                        movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, tmp.RowIndex,
+                            tmp.ColIndex);
+                        destButtonRowIndex = tmp.RowIndex;
+                        destButtonColIndex = tmp.ColIndex;
+                        pctbTag.RowIndex = tmp.RowIndex;
+                        pctbTag.ColIndex = tmp.ColIndex;
+                        XuLyDiChuyen();
+                        await tcs1.Task;
+                        MatrixButton[destButtonRowIndex][destButtonColIndex].BackColor = Color.Lime;
+                        dem++;
+                        flag = 1;
+                        lastVisitNode = i;
                         break;
                     }
-                    int v = stc.Peek();
-                    int flag = 0;
-                    
-                    for (int i = 0; i < totalNode; i++)
-                    {
-                        if (!visited[i] && AdjList[v][i] != 0)
-                        {
-                            visited[i] = true;
-                            frmMain.instance.KetQua.Text += i + " ";
-                            stc.Push(i);
-                            writer.Write(i.ToString() + " ");
-                            buttonTag tmp = (buttonTag)getButtonByNodeId(i).Tag;
-                            movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, tmp.RowIndex,
-                                tmp.ColIndex);
-                            destButtonRowIndex = tmp.RowIndex;
-                            destButtonColIndex = tmp.ColIndex;
-                            pctbTag.RowIndex = tmp.RowIndex;
-                            pctbTag.ColIndex = tmp.ColIndex;
-                            XuLyDiChuyen();
-                            await tcs1.Task;
-                            MatrixButton[destButtonRowIndex][destButtonColIndex].BackColor = Color.Lime;
-                            dem++;
-                            flag = 1;
-                            lastVisitNode = i;
-                            break;
-                        }
-                    }
-                    
-                    if (flag == 0)
-                    {
-                        stc.Pop();
-                    }
-                    if (lastVisitNode != -1 && adjList[v][lastVisitNode] == 2804)
-                    {
-                        tcs2.SetResult(true);
-                        MessageBox.Show("Đã tới đích", "Thông báo", MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                        isRun = false;
-                        return;
-                    }
                 }
-                writer.WriteLine();
-                frmMain.instance.KetQua.Text += "\n";
+                    
+                if (flag == 0)
+                {
+                    stc.Pop();
+                }
+                if (lastVisitNode != -1 && adjList[v][lastVisitNode] == 2804)
+                {
+                    tcs2.SetResult(true);
+                    MessageBox.Show("Đã tới đích", "Thông báo", MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    frmMain.instance.KetQua.Text += "\n";
+                    isRun = false;
+                    isFind = true;
+                    return;
+                }
             }
+            frmMain.instance.KetQua.Text += "\n";
+            if (!isFind && !isTest)
+            {
+                MessageBox.Show("Không tìm thấy đích", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            isFind = false;
             Tcs2.SetResult(true);
             isRun = false;
         }
@@ -478,49 +455,48 @@ namespace LTDT
             q.Enqueue(startVertices);
             visited[startVertices] = true;
             int totalNode = ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER;
-            string filePath = @"C:\Users\thava\source\repos\debugDfs\debugDfs\output_bfs_csharp.txt";
             frmMain.instance.KetQua.Text += "Đỉnh bắt đầu: " + startVertices.ToString() + "\n" + "Đường đi: ";
             frmMain.instance.KetQua.Text += startVertices.ToString() + " ";
-            using (StreamWriter writer = new StreamWriter(filePath, true))
+            while (q.Count > 0)
             {
-                writer.WriteLine(startVertices.ToString());
-                writer.Write(startVertices.ToString() + " ");
-                while (q.Count > 0)
+                int v = q.Peek();
+                q.Dequeue();
+                for (int i = 0; i < totalNode; ++i)
                 {
-                    int v = q.Peek();
-                    //frmMain.instance.KetQua.Text += v + " ";
-                    q.Dequeue();
-                    for (int i = 0; i < totalNode; ++i)
+                    if (!visited[i] && AdjList[v][i] != 0)
                     {
-                        if (!visited[i] && AdjList[v][i] != 0)
-                        {
-                            q.Enqueue(i);
-                            visited[i] = true;
-                            frmMain.instance.KetQua.Text += i + " ";
-                            writer.Write(i.ToString() + " ");
-                            buttonTag tmp = (buttonTag)getButtonByNodeId(i).Tag;
-                            movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, tmp.RowIndex,
+                        q.Enqueue(i);
+                        visited[i] = true;
+                        frmMain.instance.KetQua.Text += i + " ";
+                        buttonTag tmp = (buttonTag)getButtonByNodeId(i).Tag;
+                        movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, tmp.RowIndex,
                                 tmp.ColIndex);
-                            destButtonRowIndex = tmp.RowIndex;
-                            destButtonColIndex = tmp.ColIndex;
-                            pctbTag.RowIndex = tmp.RowIndex;
-                            pctbTag.ColIndex = tmp.ColIndex;
-                            XuLyDiChuyen();
-                            await tcs1.Task;
-                            MatrixButton[destButtonRowIndex][destButtonColIndex].BackColor = Color.Lime;
-                            if (adjList[v][i] == 2804)
-                            {
-                                tcs2.SetResult(true);
-                                MessageBox.Show("Đã tới đích", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                isRun = false;
-                                return;
-                            }
+                        destButtonRowIndex = tmp.RowIndex;
+                        destButtonColIndex = tmp.ColIndex;
+                        pctbTag.RowIndex = tmp.RowIndex;
+                        pctbTag.ColIndex = tmp.ColIndex;
+                        XuLyDiChuyen();
+                        await tcs1.Task;
+                        MatrixButton[destButtonRowIndex][destButtonColIndex].BackColor = Color.Lime;
+                        if (adjList[v][i] == 2804)
+                        {
+                            tcs2.SetResult(true);
+                            MessageBox.Show("Đã tới đích", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            frmMain.instance.KetQua.Text += "\n";
+                            isFind = true;
+                            isRun = false;
+                            return;
                         }
                     }
                 }
-                frmMain.instance.KetQua.Text += "\n";
-                writer.WriteLine();
             }
+            frmMain.instance.KetQua.Text += "\n";
+            if (!isFind && !isTest)
+            {
+                MessageBox.Show("Không tìm thấy đích", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            isFind = false;
             Tcs2.SetResult(true);
             isRun = false;
         }
@@ -631,25 +607,7 @@ namespace LTDT
 
         public async void testTraversal(string traversalType)
         {
-            /*
-             btn.BackgroundImage = Properties.Resources.placeholder;
-               buttonTag tagTmp = (buttonTag)btn.Tag;
-               tagTmp.ImageTag = 4;
-               btn.Tag = tagTmp;
-               ManPctb = new PictureBox()
-               {
-                   Width = 30,
-                   Height = 30,
-                   //Location = new Point(ConstantVar.BTNPANEL_WIDTH, ConstantVar.BTNPANEL_HEIGHT), // x y
-                   Location = new Point(btn.Location.X + 5, btn.Location.Y + 5),
-                   BackgroundImageLayout = ImageLayout.Stretch,
-                   Tag = new PictureBoxTag() { RowIndex = tagTmp.RowIndex, ColIndex = tagTmp.ColIndex},
-                   BackgroundImage = Properties.Resources.man,
-                   BackColor = Color.Transparent,
-                   BorderStyle = BorderStyle.FixedSingle
-               };
-               BoardPanel.Controls.Add(ManPctb);
-             */
+            isTest = true;
             int totalNode = ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER;
             int k = 0, z = 0;
             tcs3 = new TaskCompletionSource<bool>();
@@ -690,9 +648,10 @@ namespace LTDT
                 await Tcs2.Task;
                 z++;
             }
+
+            isTest = false;
             tcs3.SetResult(true);
         }
-
         private void MoveObjectRight(int speed)
         {
             ManPctb.Left += speed;
