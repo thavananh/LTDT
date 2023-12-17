@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -43,8 +44,8 @@ namespace LTDT
         {
             board = new Board(gradientPanel1);
             board.drawBoardPanel();
-            loadAdjMatrix();
             this.LstAdjMatrix = lstvMaTranKe;
+            loadAdjMatrix();
         }
 
         public void loadAdjMatrix()
@@ -68,6 +69,7 @@ namespace LTDT
                 lstvMaTranKe.Items.Add(item);
                 v++;
             }
+
         }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
@@ -79,13 +81,14 @@ namespace LTDT
 
         private async void btnRun_Click(object sender, EventArgs e)
         {
-            //tcsLoadAdjMatrix = new TaskCompletionSource<bool>();
+            tcsLoadAdjMatrix = new TaskCompletionSource<bool>();
+            loadAdjMatrix();
+            tcsLoadAdjMatrix.SetResult(true);
+            await tcsLoadAdjMatrix.Task;
             btnClean.Enabled = false;
             btnTest.Enabled = false;
             btnRun.Enabled = false;
-            //loadAdjMatrix();
-            //tcsLoadAdjMatrix.SetResult(true);
-            //await tcsLoadAdjMatrix.Task;
+            
             if (rdoBFS.Checked)
             {
                 board.bfs();
@@ -106,6 +109,10 @@ namespace LTDT
 
         private async void btnTest_Click(object sender, EventArgs e)
         {
+            tcsLoadAdjMatrix = new TaskCompletionSource<bool>();
+            loadAdjMatrix();
+            tcsLoadAdjMatrix.SetResult(true);
+            await tcsLoadAdjMatrix.Task;
             btnRun.Enabled = false;
             btnClean.Enabled = false;
             if (rdoBFS.Checked)
