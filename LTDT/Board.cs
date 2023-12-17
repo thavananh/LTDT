@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Printing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -272,7 +269,7 @@ namespace LTDT
             }
 
             soNode = 0;
-
+            
             for (int i = 0; i < ConstantVar.ROW_NUMBER; i++)
             {
                 for (int j = 0; j < ConstantVar.COL_NUMBER; j++)
@@ -322,7 +319,7 @@ namespace LTDT
                         adjList_original[soNode][getNodeId(i + 1, j - 1)] = 1;
                     }
 
-                    if (j - 1 >= 0 && i - 1 >= 0)
+                    if (j - 1 >= 0 && i - 1 >= 0) // left top
                     {
                         AdjList[soNode][getNodeId(i - 1, j - 1)] = 1;
                         adjList_original[soNode][getNodeId(i - 1, j - 1)] = 1;
@@ -331,7 +328,18 @@ namespace LTDT
                 }
             }
 
-            
+            string filePath = @"C:\Users\thava\source\repos\debugDfs\debugDfs\DOTHI.txt";
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                for (int i = 0; i < adjList.Count; i++)
+                {
+                    for (int j = 0; j < adjList[i].Count; j++)
+                    {
+                        writer.Write(adjList[i][j].ToString() + " ");
+                    }
+                    writer.WriteLine();
+                }
+            }
 
             //frmMain.instance.MaTranKe.Text += (ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER).ToString() + "\n";
 
@@ -361,35 +369,15 @@ namespace LTDT
         private TaskCompletionSource<bool> tcs2;
         private bool isRun = false;
 
-        public async void XuLyDiChuyen()
+        private async void XuLyDiChuyen()
         {
             tcs = new TaskCompletionSource<bool>();
             tcs1 = new TaskCompletionSource<bool>();
-            //manPctbStartLocationX = manPctb.Location.X;
-            //manPctbStartLocationY = manPctb.Location.Y;
             ManPctb.BringToFront();
             _timer.Start();
             await tcs.Task;
             await Task.Delay(0); // điều khiển di chuyển nhanh chậm
             tcs1.SetResult(true);
-
-        }
-
-        public async void startDoingThing()
-        {
-            
-            PictureBoxTag pctbTag = (PictureBoxTag)manPctb.Tag;
-            for (int i = pctbTag.RowIndex; i < MatrixButton.Count; ++i)
-            {
-                for (int j = pctbTag.ColIndex; j < MatrixButton[i].Count; j++)
-                {
-                    movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, i, j);
-                    destButtonRowIndex = i;
-                    destButtonColIndex = j;
-                    XuLyDiChuyen();
-                    await tcs1.Task;
-                }
-            }
         }
 
         private Button getButtonByNodeId(int id)
@@ -420,11 +408,11 @@ namespace LTDT
             visited[startVertices] = true;
             int lastVisitNode = -1;
             int lastVertices;
-            //string filePath = @"C:\Users\thava\source\repos\debugDfs\debugDfs\output_dfs_csharp_1.txt";
-            //using (StreamWriter writer = new StreamWriter(filePath, true))
-            //{
-            //writer.WriteLine(startVertices.ToString());
-            frmMain.instance.KetQua.Text += "Đỉnh bắt đầu: " + startVertices.ToString() + "\n" + "Đường đi: ";
+            string filePath = @"C:\Users\thava\source\repos\debugDfs\debugDfs\output_dfs_csharp.txt";
+            using (StreamWriter writer = new StreamWriter(filePath, true))
+            {
+                writer.WriteLine(startVertices.ToString());
+                frmMain.instance.KetQua.Text += "Đỉnh bắt đầu: " + startVertices.ToString() + "\n" + "Đường đi: ";
                 while (stc.Count > 0)
                 {
                     
@@ -442,7 +430,7 @@ namespace LTDT
                             visited[i] = true;
                             frmMain.instance.KetQua.Text += i + " ";
                             stc.Push(i);
-                            //writer.Write(i.ToString() + " ");
+                            writer.Write(i.ToString() + " ");
                             buttonTag tmp = (buttonTag)getButtonByNodeId(i).Tag;
                             movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, tmp.RowIndex,
                                 tmp.ColIndex);
@@ -473,9 +461,9 @@ namespace LTDT
                         return;
                     }
                 }
-            //writer.WriteLine();
-            frmMain.instance.KetQua.Text += "\n";
-        //}
+                writer.WriteLine();
+                frmMain.instance.KetQua.Text += "\n";
+            }
             Tcs2.SetResult(true);
             isRun = false;
         }
@@ -490,16 +478,17 @@ namespace LTDT
             q.Enqueue(startVertices);
             visited[startVertices] = true;
             int totalNode = ConstantVar.COL_NUMBER * ConstantVar.ROW_NUMBER;
-            //string filePath = @"C:\Users\thava\source\repos\debugDfs\debugDfs\output_bfs_csharp.txt";
+            string filePath = @"C:\Users\thava\source\repos\debugDfs\debugDfs\output_bfs_csharp.txt";
             frmMain.instance.KetQua.Text += "Đỉnh bắt đầu: " + startVertices.ToString() + "\n" + "Đường đi: ";
-            //using (StreamWriter writer = new StreamWriter(filePath, true))
-            //{
-                //writer.WriteLine(startVertices.ToString());
+            frmMain.instance.KetQua.Text += startVertices.ToString() + " ";
+            using (StreamWriter writer = new StreamWriter(filePath, true))
+            {
+                writer.WriteLine(startVertices.ToString());
+                writer.Write(startVertices.ToString() + " ");
                 while (q.Count > 0)
                 {
                     int v = q.Peek();
-                    frmMain.instance.KetQua.Text += v + " ";
-                    //writer.Write(v.ToString() + " ");
+                    //frmMain.instance.KetQua.Text += v + " ";
                     q.Dequeue();
                     for (int i = 0; i < totalNode; ++i)
                     {
@@ -508,6 +497,7 @@ namespace LTDT
                             q.Enqueue(i);
                             visited[i] = true;
                             frmMain.instance.KetQua.Text += i + " ";
+                            writer.Write(i.ToString() + " ");
                             buttonTag tmp = (buttonTag)getButtonByNodeId(i).Tag;
                             movedDirection = GetDirection(pctbTag.RowIndex, pctbTag.ColIndex, tmp.RowIndex,
                                 tmp.ColIndex);
@@ -529,8 +519,8 @@ namespace LTDT
                     }
                 }
                 frmMain.instance.KetQua.Text += "\n";
-                //writer.WriteLine();
-            //}
+                writer.WriteLine();
+            }
             Tcs2.SetResult(true);
             isRun = false;
         }
@@ -598,28 +588,7 @@ namespace LTDT
                     }
                     return "left";
                 }
-
-                //if (newColIndex > preColIndex && newRowIndex > preRowIndex)
-                //{
-                //    return "rightbottom";
-                //}
-
-                //if (newRowIndex > preRowIndex && newColIndex < preColIndex)
-                //{
-                //    return "leftbottom";
-                //}
-
-                //if (newRowIndex < preRowIndex && newColIndex > preRowIndex)
-                //{
-                //    return "righttop";
-                //}
-
-                //if (newColIndex < preColIndex && newRowIndex < preRowIndex)
-                //{
-                //    return "lefttop";
-                //}
             }
-
             return "";
         }
 
